@@ -79,6 +79,14 @@ stesso volume, poi ricrea il container.)
 3. Il contenuto è in File → **VeraCrypt** → *nome del volume*. Si usa come qualsiasi cartella.
 4. *Smonta* quando hai finito.
 
+Lo stesso si può fare dall'**app File**, nel menu «…» di un file:
+- **Monta con VeraCrypt** su un file di volume: una finestra chiede la password (PIM, keyfile e
+  sola lettura sotto «PIM, keyfile, sola lettura»), mostra una rotellina mentre VeraCrypt lavora
+  e poi apre il volume;
+- **Smonta il volume VeraCrypt** sulla cartella di un volume montato dentro «VeraCrypt», o sul
+  suo file; se il volume è in uso propone lo smontaggio forzato;
+- **Apri il volume montato** sul file di un volume montato.
+
 Nella stessa pagina:
 - **Registro errori**: password sbagliata, filesystem da riparare, volume in uso, volumi
   smontati perché il servizio si è riavviato…, spiegati, con gli errori ripetuti raggruppati;
@@ -154,6 +162,17 @@ VeraCrypt in `server/` come `veracrypt.deb` e usa `SRC_DIR`.
   (chkdsk su Windows, fsck su Linux).
 - **«Il volume è in uso»** allo smontaggio: aspetta che finiscano upload/download, o spunta
   *forzatamente*.
+
+## VeraCrypt
+Questo progetto usa **[VeraCrypt](https://veracrypt.io)**, il software libero di cifratura
+sviluppato da IDRIX a partire da TrueCrypt: il container esegue il **pacchetto console ufficiale
+di VeraCrypt**, scaricato dalle [release di VeraCrypt](https://github.com/veracrypt/VeraCrypt/releases)
+e controllato con il suo SHA-256. VeraCrypt non è modificato né incluso in questo repository e
+mantiene la propria licenza (Apache 2.0 e TrueCrypt License 3.0). I volumi montati qui sono
+normali volumi VeraCrypt: continuano a funzionare con VeraCrypt su Windows, macOS e Linux.
+
+Questo progetto non è affiliato, approvato o sponsorizzato da IDRIX o dal progetto VeraCrypt.
+«VeraCrypt» è un marchio di IDRIX.
 
 ## Licenza e contributi
 Il progetto è rilasciato con licenza **[CC BY-NC 4.0](LICENSE)** (Creative Commons

@@ -111,13 +111,13 @@ $(docker ps --format '  {{.Names}}  ({{.Image}})')"
 	NC="${found[0]}"
 fi
 docker inspect "$NC" >/dev/null 2>&1 || err "$(L "Container '$NC' not found." "Container '$NC' non trovato.")"
-log "Container Nextcloud: $NC"
+log "$(L "Nextcloud container: $NC" "Container Nextcloud: $NC")"
 
 WEB=$(docker exec "$NC" sh -c 'for d in /var/www/html /config/www/nextcloud /app/www/public; do [ -f "$d/occ" ] && echo "$d" && exit 0; done; exit 1') \
 	|| err "$(L "occ not found in $NC: is it really a Nextcloud container?" "Non trovo occ dentro $NC: è davvero un container Nextcloud?")"
 NC_UID=$(docker exec "$NC" stat -c %u "$WEB/config/config.php")
 NC_GID=$(docker exec "$NC" stat -c %g "$WEB/config/config.php")
-log "Nextcloud in $WEB (UID $NC_UID)"
+log "$(L "Nextcloud in $WEB (UID $NC_UID)" "Nextcloud in $WEB (UID $NC_UID)")"
 
 occ() { docker exec -u "$NC_UID" -w "$WEB" "$NC" php occ "$@"; }
 

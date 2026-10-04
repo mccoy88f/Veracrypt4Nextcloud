@@ -480,6 +480,36 @@ class VolumeService {
 		return '/' . preg_replace('#^files/#', '', (string)($v['ncpath'] ?? $v['file']));
 	}
 
+	/**
+	 * What the actions of the Files app need to know: which files are volumes
+	 * and which volumes are mounted, with their folder in "VeraCrypt".
+	 *
+	 * @return array{mountName: string, extensions: list<string>, extra: list<string>, volumes: list<array{path: string, dir: string, readonly: bool}>}
+	 */
+	public function clientState(string $uid): array {
+		return [
+			'mountName' => trim($this->getMountName(), '/'),
+			'extensions' => $this->getExtensions(),
+			'extra' => $this->getExtra($uid),
+			'volumes' => array_map(fn (array $v) => [
+				'path' => $this->displayPath($v),
+				'dir' => (string)($v['dir'] ?? ''),
+				'readonly' => (bool)($v['readonly'] ?? false),
+			], $this->getMounted($uid)),
+		];
+	}
+
+	/** The mounted volume of a path seen in Files: its file, or its folder inside "VeraCrypt" */
+	public function findMountedByPath(string $uid, string $path): ?array {
+		$path = '/' . trim($path, '/');
+		foreach ($this->getMounted($uid) as $v) {
+			if ($this->displayPath($v) === $path || '/' . trim($this->getMountName(), '/') . '/' . ($v['dir'] ?? '') === $path) {
+				return $v;
+			}
+		}
+		return null;
+	}
+
 	/* ---------- Protection of mounted volumes ---------- */
 
 	/**
@@ -663,6 +693,7 @@ class VolumeService {
 			'unsupported_fs' => $this->l->t('The filesystem of the volume (%s) is not supported by the server.', [$detail]),
 			'fs_dirty' => $this->l->t('The filesystem of the volume has errors or was not closed properly (Windows Fast Startup or hibernation?): repair it on your computer, or mount it read-only.'),
 			'mount_failed' => $this->l->t('The filesystem of the volume could not be mounted.'),
+			'still_closing' => $this->l->t('The volume is still closing after an unmount by force (a file was still open): try again in a moment.'),
 			'busy' => $this->l->t('The volume is in use: wait for running uploads or downloads to finish and try again, or unmount it by force.'),
 			'service_restarted' => $this->l->t('Unmounted because the VeraCrypt service restarted (server reboot or update): mount it again.'),
 			'service_stopped' => $this->l->t('Unmounted because the VeraCrypt service was stopped.'),

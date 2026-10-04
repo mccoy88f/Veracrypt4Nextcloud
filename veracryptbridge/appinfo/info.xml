@@ -5,9 +5,9 @@
     <name>VeraCrypt Volumes</name>
     <summary>Mount the VeraCrypt volumes you keep in Files and use them as a folder</summary>
     <summary lang="it">Monta i volumi VeraCrypt che tieni nei File e usali come cartella</summary>
-    <description>Each user finds the VeraCrypt volumes (.hc files) stored in their Files, mounts them with password, PIM and keyfiles, and uses their content in the “VeraCrypt” folder. The volumes are opened by the official VeraCrypt in a separate container and shown through External storage. The error log explains what went wrong. Install and update with the install.sh script from the repository.</description>
-    <description lang="it">Ogni utente trova i volumi VeraCrypt (file .hc) salvati nei propri File, li monta con password, PIM e keyfile e ne usa il contenuto nella cartella «VeraCrypt». I volumi sono aperti dal VeraCrypt ufficiale in un container separato e mostrati con l'Archiviazione esterna. Il registro errori spiega cosa è andato storto. Installazione e aggiornamento con lo script install.sh del repository.</description>
-    <version>0.1.0</version>
+    <description>Each user finds the VeraCrypt volumes (.hc files) stored in their Files, mounts them with password, PIM and keyfiles, from the settings or from the menu of the file, and uses their content in the “VeraCrypt” folder. The volumes are opened by the official VeraCrypt in a separate container and shown through External storage. The error log explains what went wrong. Install and update with the install.sh script from the repository.</description>
+    <description lang="it">Ogni utente trova i volumi VeraCrypt (file .hc) salvati nei propri File, li monta con password, PIM e keyfile, dalle impostazioni o dal menu del file, e ne usa il contenuto nella cartella «VeraCrypt». I volumi sono aperti dal VeraCrypt ufficiale in un container separato e mostrati con l'Archiviazione esterna. Il registro errori spiega cosa è andato storto. Installazione e aggiornamento con lo script install.sh del repository.</description>
+    <version>0.2.0</version>
     <licence>CC-BY-NC-4.0</licence>
     <author>Antonello Migliorelli</author>
     <namespace>VeraCryptBridge</namespace>

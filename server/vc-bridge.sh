@@ -155,6 +155,10 @@ vc_dismount() {
 	done
 	if veracrypt --text --list --slot="$slot" >/dev/null 2>&1; then
 		[[ "$force" == force ]] || return 1
+		# Still busy (a file still open): VeraCrypt cannot detach it. Its control
+		# mount for the slot is detached lazily, so the slot is free; the kernel
+		# releases the rest when the last file is closed.
+		umount -l "/tmp/.veracrypt_aux_mnt$slot" 2>/dev/null || fusermount -uz "/tmp/.veracrypt_aux_mnt$slot" 2>/dev/null
 	fi
 	[[ "$force" == force && "$dev" == /dev/mapper/veracrypt* && -e "$dev" ]] && dmsetup remove --force "${dev#/dev/mapper/}" >/dev/null 2>&1
 	release_loops "$dev" "$file"
@@ -294,7 +298,19 @@ do_mount() {
 	exec 8> "$RUN/vol-$(vkey "$rel").lock"
 	flock -n 8 || fail in_progress
 	[[ -z "$(state_find "$uid" "$rel")" ]] || fail already_mounted
-	veracrypt --text --list "$real" >/dev/null 2>&1 && fail already_mounted
+	# Mounted for VeraCrypt but not for us (left by an unmount by force): closed first
+	if out=$(veracrypt --text --list "$real" 2>/dev/null); then
+		slot=$(sed -n 's/^\([0-9]*\):.*/\1/p' <<< "$out" | head -n1)
+		[[ -n "$slot" ]] && vc_dismount "$slot" force "" "$rel"
+		veracrypt --text --list "$real" >/dev/null 2>&1 && fail already_mounted
+		log "$(L "closed a leftover mount" "chiuso un montaggio rimasto"): $uid $rel"
+	fi
+	# After an unmount by force with a file still open, the old filesystem stays
+	# alive until that file is closed: mounting the volume again meanwhile would
+	# have two of them writing into the same file
+	if fuser -s "$real" 2>/dev/null || [[ -n "$(losetup -n -O NAME -j "$real" 2>/dev/null)" ]]; then
+		fail still_closing
+	fi
 
 	kf=""
 	while IFS= read -r k; do

@@ -79,6 +79,14 @@ managers: same volume, then recreate the container.)
 3. The content is in Files → **VeraCrypt** → *volume name*. Work with it as with any folder.
 4. *Unmount* when you are done.
 
+The same can be done from the **Files app**, in the “…” menu of a file:
+- **Mount with VeraCrypt** on a volume file: a dialog asks for the password (PIM, keyfiles
+  and read-only under “PIM, keyfiles, read-only”), shows a spinner while VeraCrypt works, and
+  then opens the volume;
+- **Unmount VeraCrypt volume** on the folder of a mounted volume inside “VeraCrypt”, or on its
+  file; if the volume is in use it offers to unmount it by force;
+- **Open mounted volume** on the file of a mounted volume.
+
 The page also shows:
 - **Error log**: wrong password, filesystem to repair, volume in use, volumes unmounted
   because the service restarted…, explained, with repeated errors grouped;
@@ -149,6 +157,17 @@ To build the image on a server without internet access, put the VeraCrypt packag
   (chkdsk on Windows, fsck on Linux).
 - **“The volume is in use”** when unmounting: wait for uploads/downloads to finish, or tick
   *by force*.
+
+## VeraCrypt
+This project uses **[VeraCrypt](https://veracrypt.io)**, the free disk encryption software
+developed by IDRIX on the basis of TrueCrypt: the container runs the **official VeraCrypt
+console package**, downloaded from the [VeraCrypt releases](https://github.com/veracrypt/VeraCrypt/releases)
+and checked against its SHA-256. VeraCrypt is not modified nor included in this repository;
+it keeps its own license (Apache 2.0 and TrueCrypt License 3.0). Volumes mounted here are
+standard VeraCrypt volumes: they keep working with VeraCrypt on Windows, macOS and Linux.
+
+This project is not affiliated with, endorsed or sponsored by IDRIX or the VeraCrypt project.
+“VeraCrypt” is a trademark of IDRIX.
 
 ## License and contributions
 The project is released under the **[CC BY-NC 4.0](LICENSE)** license (Creative Commons

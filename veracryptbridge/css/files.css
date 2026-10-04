@@ -1,0 +1,30 @@
+/* Dialog of the "Mount with VeraCrypt" action in the Files app */
+.vcb-dialog-overlay {
+	position: fixed; inset: 0; z-index: 10000;
+	display: flex; align-items: center; justify-content: center;
+	background: rgba(0, 0, 0, 0.5);
+}
+.vcb-dialog {
+	width: min(440px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto;
+	padding: 20px 22px; border-radius: var(--border-radius-large, 12px);
+	background: var(--color-main-background, #fff); color: var(--color-main-text, #222);
+	box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+}
+.vcb-dialog h2 { margin: 0 0 14px; font-size: 1.25em; font-weight: bold; overflow-wrap: anywhere; }
+.vcb-dialog-form { display: flex; flex-direction: column; gap: 10px; }
+.vcb-dialog-field { display: flex; flex-direction: column; gap: 4px; }
+.vcb-dialog-field input, .vcb-dialog-field textarea { width: 100%; margin: 0; }
+.vcb-dialog-more summary { cursor: pointer; color: var(--color-text-maxcontrast); margin-bottom: 8px; }
+.vcb-dialog-more { display: flex; flex-direction: column; gap: 10px; }
+.vcb-dialog-check { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+.vcb-dialog-hint { color: var(--color-text-maxcontrast); font-size: 0.92em; margin: 0; }
+.vcb-dialog-error { color: var(--color-error-text, var(--color-error, #c9302c)); margin: 0; }
+.vcb-dialog-error:empty { display: none; }
+.vcb-dialog-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+.vcb-dialog .vcb-spinner {
+	display: inline-block; width: 14px; height: 14px; margin-right: 8px; vertical-align: -2px;
+	border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%;
+	animation: vcb-spin 0.8s linear infinite;
+}
+@keyframes vcb-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .vcb-dialog .vcb-spinner { animation-duration: 2.4s; } }

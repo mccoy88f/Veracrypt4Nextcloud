@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OCA\VeraCryptBridge\AppInfo;
 
+use OCA\Files\Event\LoadAdditionalScriptsEvent;
+use OCA\VeraCryptBridge\Listener\FilesScripts;
 use OCA\VeraCryptBridge\Listener\PrivacyGuard;
 use OCA\VeraCryptBridge\Listener\VolumeGuard;
 use OCA\VeraCryptBridge\Listener\WriteGuard;
@@ -31,6 +33,8 @@ class Application extends App implements IBootstrap {
 		$context->registerEventListener(BeforeNodeRenamedEvent::class, VolumeGuard::class);
 		$context->registerEventListener(BeforeNodeCopiedEvent::class, VolumeGuard::class);
 		$context->registerEventListener(BeforeUserDeletedEvent::class, VolumeGuard::class);
+		// Mount and unmount from the menu of the files
+		$context->registerEventListener(LoadAdditionalScriptsEvent::class, FilesScripts::class);
 	}
 
 	public function boot(IBootContext $context): void {

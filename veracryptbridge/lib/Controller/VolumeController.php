@@ -10,6 +10,7 @@ use OCA\VeraCryptBridge\Service\VolumeService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\Attribute\BruteForceProtection;
 use OCP\AppFramework\Http\Attribute\NoAdminRequired;
+use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Http\RedirectResponse;
 use OCP\IL10N;
 use OCP\IRequest;
@@ -93,6 +94,71 @@ class VolumeController extends Controller {
 			$this->error($uid, $e, $path);
 		}
 		return $this->back();
+	}
+
+	/**
+	 * Mount from the menu of the Files app.
+	 *
+	 * @NoAdminRequired
+	 * @BruteForceProtection(action=veracryptbridge_mount)
+	 */
+	#[NoAdminRequired]
+	#[BruteForceProtection(action: 'veracryptbridge_mount')]
+	public function apiMount(string $path = '', #[\SensitiveParameter] string $password = '', string $pim = '',
+		string $keyfiles = '', bool $readonly = false): JSONResponse {
+		$uid = $this->uid();
+		$pim = trim($pim);
+		if ($pim !== '' && !ctype_digit($pim)) {
+			return $this->json(false, $this->l->t('The PIM must be a number (leave it empty if you did not set one).'), 'bad_request');
+		}
+		ignore_user_abort(true);
+		try {
+			$result = $this->volumes->mount($uid, $path, $password, (int)$pim, $keyfiles, $readonly);
+		} catch (BridgeException $e) {
+			$message = $this->volumes->describe($e->reason, $e->detail);
+			$this->volumes->logError($uid, $message, $path);
+			$response = $this->json(false, $message, $e->reason);
+			if ($e->reason === 'wrong_password') {
+				$response->throttle(['path' => $path]);
+			}
+			return $response;
+		}
+		$text = $this->l->t('Volume mounted: you find it in Files, in the folder “%1$s/%2$s”.', [$this->volumes->getMountName(), $result['dir']]);
+		if ($result['note'] === 'fat_readonly') {
+			$text .= ' ' . $this->l->t('It is read-only: this server cannot write FAT volumes.');
+		} elseif ($result['readonly']) {
+			$text .= ' ' . $this->l->t('It is read-only.');
+		}
+		return $this->json(true, $text, '', ['dir' => $result['dir']]);
+	}
+
+	/**
+	 * Unmount from the menu of the Files app: $path is the file of the volume or
+	 * its folder inside "VeraCrypt".
+	 *
+	 * @NoAdminRequired
+	 */
+	#[NoAdminRequired]
+	public function apiUnmount(string $path = '', bool $force = false): JSONResponse {
+		$uid = $this->uid();
+		$volume = $this->volumes->findMountedByPath($uid, $path);
+		if ($volume === null) {
+			return $this->json(false, $this->volumes->describe('not_mounted'), 'not_mounted');
+		}
+		ignore_user_abort(true);
+		try {
+			$this->volumes->unmount($uid, $volume['file'], $force);
+		} catch (BridgeException $e) {
+			$message = $this->volumes->describe($e->reason, $e->detail);
+			$this->volumes->logError($uid, $message, $this->volumes->displayPath($volume));
+			return $this->json(false, $message, $e->reason);
+		}
+		return $this->json(true, $this->l->t('Volume unmounted.'));
+	}
+
+	private function json(bool $ok, string $message, string $code = '', array $extra = []): JSONResponse {
+		return new JSONResponse(['ok' => $ok, 'message' => $message, 'code' => $code,
+			'state' => $this->volumes->clientState($this->uid())] + $extra);
 	}
 
 	/** @NoAdminRequired */

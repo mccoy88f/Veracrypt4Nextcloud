@@ -89,6 +89,18 @@ OC.L10N.register(
         ],
         "Enter the password of the volume, or its keyfiles.": "Inserisci la password del volume, oppure i suoi keyfile.",
         "Mounting…": "Montaggio in corso…",
-        "Unmounting…": "Smontaggio in corso…"
+        "Unmounting…": "Smontaggio in corso…",
+        "Unexpected answer from the server ({status}).": "Risposta inattesa dal server ({status}).",
+        "Cancel": "Annulla",
+        "The request failed: {error}": "Richiesta non riuscita: {error}",
+        "PIM, keyfiles, read-only": "PIM, keyfile, sola lettura",
+        "Mount “{name}”": "Monta «{name}»",
+        "Unmount “{name}”": "Smonta «{name}»",
+        "Unmount it by force? Files still being written may be incomplete.": "Smontarlo forzatamente? I file ancora in scrittura potrebbero restare incompleti.",
+        "Unmount by force": "Smonta forzatamente",
+        "Mount with VeraCrypt": "Monta con VeraCrypt",
+        "Open mounted volume": "Apri il volume montato",
+        "Unmount VeraCrypt volume": "Smonta il volume VeraCrypt",
+        "The volume is still closing after an unmount by force (a file was still open): try again in a moment.": "Il volume si sta ancora chiudendo dopo uno smontaggio forzato (un file era ancora aperto): riprova tra poco."
     },
     "nplurals=2; plural=(n != 1);");
