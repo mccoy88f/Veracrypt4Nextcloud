@@ -59,6 +59,10 @@ save, *Restart* the resource and run `install` again. (With docker compose or ot
 managers: same volume, then recreate the container.)
 
 ### Requirements
+- **Nextcloud 30 or later**, recent versions only (the app declares 30 to 35). Tested on
+  Nextcloud 31; the menu actions of the Files app are written for both the action system of
+  Nextcloud 30-32 and the newer one, but they have not been tried on 33 or later yet.
+  Older versions are not supported.
 - A Linux server with Docker, **x86_64 or ARM64** (VeraCrypt packages exist for these).
 - FUSE on the host (`/dev/fuse`, present on almost every server).
 - The container runs **privileged** (`--privileged`): VeraCrypt needs loop devices,

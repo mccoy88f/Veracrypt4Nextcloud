@@ -59,6 +59,10 @@ salva, fai *Restart* della risorsa e rilancia `install`. (Con docker compose o a
 stesso volume, poi ricrea il container.)
 
 ### Requisiti
+- **Nextcloud 30 o successivo**, solo versioni recenti (l'app dichiara dalla 30 alla 35).
+  Provato su Nextcloud 31; i comandi nel menu dell'app File sono scritti sia per il sistema di
+  azioni di Nextcloud 30-32 sia per quello più nuovo, ma non sono ancora stati provati dalla 33
+  in poi. Le versioni precedenti non sono supportate.
 - Un server Linux con Docker, **x86_64 o ARM64** (i pacchetti di VeraCrypt esistono per questi).
 - FUSE sull'host (`/dev/fuse`, presente quasi ovunque).
 - Il container gira **privilegiato** (`--privileged`): a VeraCrypt servono i loop device,
