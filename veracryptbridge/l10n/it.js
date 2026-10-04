@@ -87,6 +87,8 @@ OC.L10N.register(
             "I volumi vengono smontati automaticamente %n ora dopo il montaggio.",
             "I volumi vengono smontati automaticamente %n ore dopo il montaggio."
         ],
-        "Enter the password of the volume, or its keyfiles.": "Inserisci la password del volume, oppure i suoi keyfile."
+        "Enter the password of the volume, or its keyfiles.": "Inserisci la password del volume, oppure i suoi keyfile.",
+        "Mounting…": "Montaggio in corso…",
+        "Unmounting…": "Smontaggio in corso…"
     },
     "nplurals=2; plural=(n != 1);");

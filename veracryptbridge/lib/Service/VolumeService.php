@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OCA\VeraCryptBridge\Service;
 
 use OCA\VeraCryptBridge\AppInfo\Application;
+use OCP\Files\Cache\IScanner;
 use OCP\Files\File;
 use OCP\Files\Folder;
 use OCP\Files\IHomeStorage;
@@ -352,29 +353,70 @@ class VolumeService {
 	}
 
 	/**
-	 * Volumes unmounted since the last look (by the user, after a restart of the
-	 * container…): their file changed while it was mounted, so Nextcloud has to
-	 * read its size and date again, and sync clients download it again.
+	 * Volumes mounted or unmounted since the last look (by the user, after a
+	 * restart of the container…). Nextcloud does not notice them by itself:
+	 * - the "VeraCrypt" folder is refreshed, so that the desktop client sees the
+	 *   volume appear or disappear, and what Nextcloud knew about an unmounted
+	 *   volume (file names in Recent, in search…) is forgotten;
+	 * - the file of an unmounted volume changed while it was mounted, so its
+	 *   size and date are read again, and sync clients download it again.
 	 */
 	public function reconcile(string $uid): void {
 		$known = json_decode($this->config->getUserValue($uid, self::APP, 'known', '[]'), true);
 		$known = is_array($known) ? $known : [];
 		$now = [];
 		foreach ($this->getMounted($uid) as $v) {
-			$now[$v['file']] = (string)($v['ncpath'] ?? '');
+			$now[$v['file']] = ['ncpath' => (string)($v['ncpath'] ?? ''), 'dir' => (string)($v['dir'] ?? ''),
+				'since' => (int)($v['since'] ?? 0)];
 		}
-		foreach ($known as $rel => $ncpath) {
-			if (!isset($now[$rel])) {
-				$this->refreshFile($uid, (string)$ncpath);
+		$changed = false;
+		foreach ($known as $rel => $old) {
+			$old = is_array($old) ? $old : ['ncpath' => (string)$old, 'dir' => '', 'since' => 0];
+			if (!isset($now[$rel]) || $now[$rel]['since'] !== (int)($old['since'] ?? 0)) {
+				$this->refreshFile($uid, (string)($old['ncpath'] ?? ''));
+				$this->refreshVolumeFolder($uid, (string)($old['dir'] ?? ''));
+				$changed = true;
 			}
 		}
-		if ($now != $known) {
+		foreach ($now as $rel => $v) {
+			if (!isset($known[$rel]) || !is_array($known[$rel]) || (int)($known[$rel]['since'] ?? 0) !== $v['since']) {
+				$this->refreshVolumeFolder($uid, $v['dir']);
+				$changed = true;
+			}
+		}
+		if ($changed || count($now) !== count($known)) {
 			if ($now === []) {
 				$this->config->deleteUserValue($uid, self::APP, 'known');
 			} else {
-				$this->config->setUserValue($uid, self::APP, 'known', json_encode($now, JSON_UNESCAPED_SLASHES));
+				$this->config->setUserValue($uid, self::APP, 'known', json_encode($now, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 			}
 			$this->setKnownUser($uid, $now !== []);
+		}
+	}
+
+	/**
+	 * Forgets what Nextcloud knew about the folder of a volume in "VeraCrypt" and
+	 * records that the "VeraCrypt" folder changed (new etag, seen by the clients).
+	 */
+	private function refreshVolumeFolder(string $uid, string $dir): void {
+		if ($dir === '' || str_contains($dir, '/')) {
+			return;
+		}
+		try {
+			$folder = $this->rootFolder->getUserFolder($uid)->get($this->getMountName());
+			if (!$folder instanceof Folder || !$this->isInsideVolume($folder)) {
+				// Not mounted for this user yet (first volume): Nextcloud will scan it when it appears
+				return;
+			}
+			$storage = $folder->getStorage();
+			$cache = $storage->getCache();
+			if ($cache->inCache($dir)) {
+				$cache->remove($dir);
+			}
+			$storage->getScanner()->scan('', IScanner::SCAN_SHALLOW);
+			$storage->getPropagator()->propagateChange($dir, time());
+		} catch (\Throwable $e) {
+			$this->logger->info('Refresh of the folder ' . $dir . ' failed', ['app' => self::APP, 'exception' => $e]);
 		}
 	}
 

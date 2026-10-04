@@ -117,6 +117,10 @@ Nextcloud.
   mentre è montato: la copia può essere incoerente finché non viene smontato e sincronizzato di
   nuovo. Se sincronizzi i File su un computer, valuta di escludere i volumi, o smontali prima di
   aprirli lì.
+- Nella cartella «VeraCrypt» in sé non si può creare nulla, e la cartella di un volume montato
+  non si può eliminare o rinominare: si può modificare solo il contenuto dei volumi. Quando un
+  volume viene smontato, Nextcloud dimentica i suoi file (non compaiono più in Recenti né nella
+  ricerca).
 - Dopo un riavvio del server, un aggiornamento o un riavvio del container, tutti i volumi
   risultano smontati (le password non vengono conservate): gli utenti li montano di nuovo. Il
   registro errori lo segnala.
@@ -138,6 +142,11 @@ VeraCrypt in `server/` come `veracrypt.deb` e usa `SRC_DIR`.
 ## Problemi comuni
 - **La cartella «VeraCrypt» è vuota anche se il volume è montato**: manca la riga nel compose o
   Nextcloud non è stato riavviato dopo averla aggiunta. Rilancia `install`: te lo dice.
+- **Il client desktop mostra la cartella «VeraCrypt» ma non i volumi**: i volumi compaiono alla
+  sincronizzazione successiva al montaggio. Il client desktop chiede conferma prima di
+  sincronizzare le archiviazioni esterne (*Impostazioni → Chiedi conferma prima di sincronizzare
+  archiviazioni esterne*): controlla che la cartella «VeraCrypt» non sia esclusa nella scelta
+  delle cartelle dell'account.
 - **«Il servizio VeraCrypt non è raggiungibile»**: `docker ps` / `docker logs vc4nc-bridge`.
 - **Password sbagliata, ma è giusta**: controlla il PIM (vuoto se non ne hai mai impostato uno)
   e i keyfile; le password con lettere accentate funzionano come su Linux e macOS (UTF-8).

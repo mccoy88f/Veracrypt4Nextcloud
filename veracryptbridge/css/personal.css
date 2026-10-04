@@ -48,3 +48,12 @@
 #veracryptbridge .vcb-guide ul { list-style: disc; padding-left: 22px; margin-top: 10px; }
 #veracryptbridge .vcb-guide li { margin-bottom: 8px; }
 #veracryptbridge .vcb-nowrap { white-space: nowrap; }
+#veracryptbridge .vcb-spinner {
+	display: inline-block; width: 14px; height: 14px; margin-right: 8px; vertical-align: -2px;
+	border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%;
+	animation: vcb-spin 0.8s linear infinite;
+}
+@keyframes vcb-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { #veracryptbridge .vcb-spinner { animation-duration: 2.4s; } }
+#veracryptbridge .vcb-working button:disabled { cursor: progress; }
+#veracryptbridge .vcb-working button.vcb-busy:disabled { opacity: 1; }

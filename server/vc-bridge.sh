@@ -194,6 +194,16 @@ unmount_entry() {
 	return 0
 }
 
+# /mnt/vc/<uid>: Nextcloud can read it but not write it, only the mounted
+# volumes inside are writable. Otherwise files uploaded while a volume is
+# unmounted would land there in clear, and deleting or renaming the folder of a
+# mounted volume in Files would empty the volume.
+user_dir() {
+	mkdir -p "$MNT/$1"
+	chown "0:$NC_GID" "$MNT/$1"
+	chmod 750 "$MNT/$1"
+}
+
 # Folder name for a volume in /mnt/vc/<uid>: the name asked, " (2)", " (3)"… if taken
 pick_dir() {
 	local uid="$1" name="$2" d n=2
@@ -339,7 +349,7 @@ do_mount() {
 		vc_dismount "$slot" force; release_slot "$slot"; fail no_filesystem
 	fi
 
-	mkdir -p "$MNT/$uid"; chown "$NC_UID:$NC_GID" "$MNT/$uid"; chmod 750 "$MNT/$uid"
+	user_dir "$uid"
 	dir=$(pick_dir "$uid" "$name")
 	target="$MNT/$uid/$dir"
 	mkdir -p "$target"; chown "$NC_UID:$NC_GID" "$target"; chmod 770 "$target"
@@ -515,6 +525,9 @@ daemon() {
 	log "$(veracrypt --text --version 2>/dev/null | head -n1), $(L "kernel crypto (dm-crypt)" "crittografia del kernel (dm-crypt)"): $(cat "$RUN/kernel_crypto")"
 
 	cleanup_previous
+	for d in "$MNT"/*/; do
+		[[ -d "$d" ]] && user_dir "$(basename "$d")"
+	done
 	trap stop_all TERM INT
 	start_socket
 	log "$(L "ready, socket" "pronto, socket"): $SOCK"

@@ -54,7 +54,7 @@
 					</td>
 					<td class="vcb-actions">
 						<?php if ($v['mounted'] !== null): ?>
-							<form method="post" action="<?php p($_['unmountUrl']); ?>">
+							<form method="post" action="<?php p($_['unmountUrl']); ?>" data-busy="<?php p($l->t('Unmounting…')); ?>">
 								<input type="hidden" name="requesttoken" value="<?php p($_['requesttoken']); ?>">
 								<input type="hidden" name="file" value="<?php p($v['rel']); ?>">
 								<button type="submit" class="button primary"><?php p($l->t('Unmount')); ?></button>
@@ -65,7 +65,7 @@
 						<?php elseif ($v['problem'] === null): ?>
 							<details class="vcb-mount">
 								<summary class="button"><?php p($l->t('Mount…')); ?></summary>
-								<form method="post" action="<?php p($_['mountUrl']); ?>" class="vcb-form">
+								<form method="post" action="<?php p($_['mountUrl']); ?>" class="vcb-form" data-busy="<?php p($l->t('Mounting…')); ?>">
 									<input type="hidden" name="requesttoken" value="<?php p($_['requesttoken']); ?>">
 									<input type="hidden" name="path" value="<?php p($v['path']); ?>">
 									<label><?php p($l->t('Password')); ?>

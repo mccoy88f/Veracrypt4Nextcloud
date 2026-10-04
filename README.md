@@ -115,6 +115,9 @@ Nextcloud profile.
   it changed. The desktop client may sync the volume file while it is mounted: the copy can be
   inconsistent until it is unmounted and synced again. If you sync your Files to a computer,
   consider excluding the volumes, or unmount them before opening them there.
+- In the “VeraCrypt” folder itself nothing can be created, and the folder of a mounted volume
+  cannot be deleted or renamed: only the content of the volumes can be changed. When a volume
+  is unmounted, Nextcloud forgets its files (they no longer appear in Recent or in search).
 - After a server reboot, an update or a restart of the container, all volumes are unmounted
   (the passwords are not kept): users mount them again. The error log says so.
 
@@ -135,6 +138,10 @@ To build the image on a server without internet access, put the VeraCrypt packag
 ## Common problems
 - **The “VeraCrypt” folder is empty although the volume is mounted**: the line in the compose
   is missing or Nextcloud was not restarted after adding it. Run `install` again: it says so.
+- **The desktop client shows the “VeraCrypt” folder but not the volumes**: the volumes appear
+  at the next sync after mounting. The desktop client asks for confirmation before syncing
+  external storages (*Settings → Ask for confirmation before synchronizing external storages*):
+  check that the “VeraCrypt” folder is not excluded in the folder selection of the account.
 - **“The VeraCrypt service is not reachable”**: `docker ps` / `docker logs vc4nc-bridge`.
 - **Wrong password, but it is right**: check the PIM (empty if you never set one) and the
   keyfiles; passwords with accented letters work as on Linux and macOS (UTF-8).

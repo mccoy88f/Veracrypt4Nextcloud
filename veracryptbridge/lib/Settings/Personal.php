@@ -25,6 +25,7 @@ class Personal implements ISettings {
 	public function getForm(): TemplateResponse {
 		$uid = $this->userSession->getUser()?->getUID() ?? '';
 		Util::addStyle(Application::APP_ID, 'personal');
+		Util::addScript(Application::APP_ID, 'personal');
 		$configured = $this->volumes->isConfigured();
 		if ($configured) {
 			$this->volumes->reconcile($uid);
